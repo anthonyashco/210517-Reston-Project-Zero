@@ -17,7 +17,6 @@ class Transaction():
         self.destination_account_id = destination_account_id
         self.transfer_amount = transfer_amount
         self.transaction_time = transaction_time
-        Transaction.count += 1
 
     def __str__(self) -> str:
         return "Transaction {}: {} ({}) transferred {:.2f} to {} at {}.".format(

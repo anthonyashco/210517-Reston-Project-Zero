@@ -2,7 +2,6 @@ from __future__ import annotations
 
 
 class User():
-    count = 0
 
     def __init__(self,
                  user_id: int = 0,
@@ -19,7 +18,6 @@ class User():
         self.first_name = first_name
         self.last_name = last_name
         self.status = status
-        User.count += 1
 
     def __str__(self) -> str:
         return f"User {self.user_id} ({self.email}). Status: {self.status}"
