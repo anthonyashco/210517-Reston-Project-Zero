@@ -21,11 +21,7 @@ def test_generate_password():
 
 
 def test_saved_password():
-    pass_hash = (
-        "de408fec2ba4acf7a29f01798df5d4a12f0d73bda4ab49b91d602b62a7baf5c3" +
-        "90100c025e93d4d380e320c5d24b06574d5c2ec4e3eea95f4eb9b04a7a113e26" +
-        "eef3fd4f731495e5009ae76048baf1e6db2c9e1d70108479ab601feb2c2acdd2" +
-        "4046d553e9be1c37a191af72895fbfe739b3d6699fba57d72af9f28cddcfd19c")
-    pass_salt = 'd7c7371d702b005c48be283b5357c756'
-    assert p.check_pass("potato", pass_hash, pass_salt)
-    assert not p.check_pass("potahto", pass_hash, pass_salt)
+    pass_hash = "153417bd132637ba71cf236c323a55bd"
+    pass_salt = "71a8b28bf9986f51ab5e31c1c20993f3"
+    assert p.check_pass("password", pass_hash, pass_salt)
+    assert not p.check_pass("potato", pass_hash, pass_salt)
