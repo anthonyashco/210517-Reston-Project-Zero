@@ -1,47 +1,47 @@
-BEGIN;
+begin;
 
-CREATE SCHEMA piggybank;
+create schema piggybank;
 
-CREATE TABLE piggybank.users (
-	id serial UNIQUE PRIMARY KEY,
-	email varchar(200) UNIQUE,
+create table piggybank.user (
+	id serial unique primary key,
+	email varchar(200) unique,
 	pass_hash varchar(200),
 	pass_salt varchar (200),
 	first_name varchar(50),
 	last_name varchar(200),
 	status varchar(50) 
-		CHECK ((status = 'employee')
-		OR (status = 'admin')
-		OR (status = 'active')
-		OR (status = 'pending credit')
-		OR (status = 'pending debit')
-		OR (status = 'closed'))
+		check ((status = 'employee')
+		or (status = 'admin')
+		or (status = 'active')
+		or (status = 'pending credit')
+		or (status = 'pending debit')
+		or (status = 'closed'))
 );
 
-CREATE TABLE piggybank.accounts (
-	id serial UNIQUE PRIMARY KEY,
-	account_type varchar(50) CHECK (account_type = 'debit' OR account_type = 'credit'),
-	balance numeric CHECK ((account_type = 'debit' AND balance >= 0.00) OR (account_type = 'credit'))
+create table piggybank.account (
+	id serial unique primary key,
+	account_type varchar(50) check (account_type = 'debit' or account_type = 'credit'),
+	balance numeric check ((account_type = 'debit' and balance >= 0.00) or (account_type = 'credit'))
 );
 
-CREATE TABLE piggybank.user_accounts (
-	id serial UNIQUE PRIMARY KEY,
-	user_id int NOT NULL,
-	account_id int NOT NULL,
-	FOREIGN KEY (user_id) REFERENCES piggybank.users(id) ON DELETE CASCADE,
-	FOREIGN KEY (account_id) REFERENCES piggybank.accounts(id)
+create table piggybank.user_account (
+	id serial unique primary key,
+	user_id int not null,
+	account_id int not null,
+	foreign key (user_id) references piggybank.user(id) on delete cascade,
+	foreign key (account_id) references piggybank.account(id)
 );
 
-CREATE TABLE piggybank.transactions (
-	id serial UNIQUE PRIMARY KEY,
-	source_account_id int NOT NULL,
-	source_user_id int NOT NULL,
-	transfer_amount numeric NOT NULL,
+create table piggybank.transaction (
+	id serial unique primary key,
+	source_account_id int not null,
+	source_user_id int not null,
+	transfer_amount numeric not null,
 	destination_account_id int,
 	transaction_time timestamptz DEFAULT current_timestamp,
-	FOREIGN KEY (source_account_id) REFERENCES piggybank.accounts(id),
-	FOREIGN KEY (source_user_id) REFERENCES piggybank.users(id),
-	FOREIGN KEY (destination_account_id) REFERENCES piggybank.accounts(id)
+	foreign key (source_account_id) references piggybank.account(id),
+	foreign key (source_user_id) references piggybank.user(id),
+	foreign key (destination_account_id) references piggybank.account(id)
 );
 
-COMMIT;
+commit;
