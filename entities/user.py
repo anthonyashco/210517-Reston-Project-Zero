@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+
 class User():
     count = 0
 
@@ -20,3 +23,20 @@ class User():
 
     def __str__(self) -> str:
         return f"User {self.user_id} ({self.email}). Status: {self.status}"
+
+    def to_json(self) -> dict:
+        return {
+            "id": self.id,
+            "email": self.email,
+            "pass_hash": self.pass_hash,
+            "pass_salt": self.pass_salt,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "status": self.status
+        }
+
+    @staticmethod
+    def from_json(json: dict) -> User:
+        return User(json["id"], json["email"], json["pass_hash"],
+                    json["pass_salt"], json["first_name"], json["last_name"],
+                    json["status"])

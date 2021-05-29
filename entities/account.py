@@ -1,5 +1,7 @@
+from __future__ import annotations
+
+
 class Account():
-    count = 0
 
     def __init__(self,
                  account_id: int = 0,
@@ -8,7 +10,17 @@ class Account():
         self.id = account_id
         self.type = account_type
         self.balance = balance
-        Account.count += 1
 
     def __str__(self) -> str:
         return f"Account {self.id} ({self.type}): {self.balance:.2f}"
+
+    def to_json(self) -> dict:
+        return {
+            "id": self.id,
+            "account_type": self.type,
+            "balance": self.balance
+        }
+
+    @staticmethod
+    def from_json(json: dict) -> Account:
+        return Account(json["id"], json["account_type"], json["balance"])
