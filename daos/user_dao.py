@@ -1,6 +1,6 @@
-from typing import List
 from entities.account import Account
 from entities.user import User
+from typing import List
 from utils.connect import Connection
 
 conn = Connection.conn
@@ -8,80 +8,100 @@ conn = Connection.conn
 
 class UserDAO():
 
+    @staticmethod
     def create(user: User) -> User:
-        smt = ("INSERT INTO piggybank.users VALUES " +
-               "(DEFAULT, %s, %s, %s, %s, %s, %s) RETURNING id")
+        smt = """
+            insert into
+                piggybank.user
+            values
+                (default, %s, %s, %s, %s, %s, %s)
+            returning
+                id
+        """
         cursor = conn.cursor()
         cursor.execute(smt, [
             user.email, user.pass_hash, user.pass_salt, user.first_name,
             user.last_name, user.status
         ])
+        conn.commit()
         user.id = cursor.fetchone()[0]
 
         return user
 
+    @staticmethod
     def get(user_id: int) -> User:
-        smt = "SELECT * FROM piggybank.users WHERE id = %s"
+        smt = "select * from piggybank.user where id = %s"
         cursor = conn.cursor()
         cursor.execute(smt, [user_id])
         records = cursor.fetchall()
 
-        users = []
-        for user in records:
-            user = User(user[0], user[1], user[2], user[3], user[4], user[5],
-                        user[6])
-            users.append(user)
-
+        users = [User(*record) for record in records]
         return users[0]
 
-    def get_from_account(account: Account) -> List[User]:
-        join_smt = "SELECT user_id FROM piggybank.user_accounts WHERE account_id=%s"
+    @staticmethod
+    def get_from_email(email: str) -> User:
+        smt = "select * from piggybank.user where email = %s"
         cursor = conn.cursor()
-        cursor.execute(join_smt, [account.id])
+        cursor.execute(smt, [email])
         records = cursor.fetchall()
 
-        user_ids = [user_id for user_id in records]
-        users = []
-        usr_smt = "SELECT * FROM piggybank.users WHERE id = %s"
+        users = [User(*record) for record in records]
+        return users[0]
 
-        for user_id in user_ids:
-            cursor.execute(usr_smt, [user_id])
-            record = cursor.fetchone()
-            user = User(record[0], record[1], record[2], record[3], record[4],
-                        record[5], record[6])
-            users.append(user)
+    @staticmethod
+    def get_from_account(account: Account) -> List[User]:
+        smt = """
+            select
+                u.id, email, pass_hash, pass_salt, first_name, last_name, status
+            from
+                piggybank.account a
+                inner join piggybank.user_account ua on a.id = ua.account_id
+                left join piggybank.user u on ua.user_id = u.id
+            where
+                a.id = %s
+        """
+        cursor = conn.cursor()
+        cursor.execute(smt, [account.id])
+        records = cursor.fetchall()
 
+        users = [User(*record) for record in records]
         return users
 
+    @staticmethod
     def get_all() -> List[User]:
-        smt = "SELECT * FROM piggybank.users"
+        smt = "select * from piggybank.user"
         cursor = conn.cursor()
         cursor.execute(smt)
         records = cursor.fetchall()
 
-        users = []
-        for user in records:
-            user = User(user[0], user[1], user[2], user[3], user[4], user[5],
-                        user[6])
-            users.append(user)
-
+        users = [User(*record) for record in records]
         return users
 
+    @staticmethod
     def update(user: User) -> User:
-        smt = (
-            "UPDATE piggybank.users SET email=%s, pass_hash=%s, pass_salt=%s, "
-            + "first_name=%s, last_name=%s, status=%s WHERE id=%s")
+        smt = """
+            update
+                piggybank.user
+            set
+                email = %s, pass_hash = %s, pass_salt = %s,
+                first_name = %s, last_name = %s, status = %s
+            where
+                id = %s
+        """
         cursor = conn.cursor()
         cursor.execute(smt, [
             user.email, user.pass_hash, user.pass_salt, user.first_name,
             user.last_name, user.status, user.id
         ])
+        conn.commit()
 
         return user
 
+    @staticmethod
     def delete(user: User) -> bool:
-        smt = "DELETE FROM piggybank.users WHERE id=%s"
+        smt = "delete from piggybank.user where id = %s"
         cursor = conn.cursor()
         cursor.execute(smt, [user.id])
+        conn.commit()
 
         return True

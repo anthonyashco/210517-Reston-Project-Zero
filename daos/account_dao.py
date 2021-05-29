@@ -1,6 +1,6 @@
-from typing import List
 from entities.account import Account
 from entities.user import User
+from typing import List
 from utils.connect import Connection
 
 conn = Connection.conn
@@ -8,68 +8,76 @@ conn = Connection.conn
 
 class AccountDAO():
 
+    @staticmethod
     def create(account: Account) -> Account:
-        smt = "INSERT INTO piggybank.accounts VALUES (DEFAULT, %s, %s) RETURNING id"
+        smt = "insert into piggybank.account values (default, %s, %s) returning id"
         cursor = conn.cursor()
         cursor.execute(smt, [account.type, account.balance])
+        conn.commit()
         account.id = cursor.fetchone()[0]
 
         return account
 
+    @staticmethod
     def get(account_id: int) -> Account:
-        smt = "SELECT * FROM piggybank.accounts WHERE id = %s"
+        smt = "select * from piggybank.account where id = %s"
         cursor = conn.cursor()
         cursor.execute(smt, [account_id])
         records = cursor.fetchall()
 
-        accounts = []
-        for account in records:
-            account = Account(account[0], account[1], account[2])
-            accounts.append(account)
-
+        accounts = [Account(*record) for record in records]
         return accounts[0]
 
+    @staticmethod
     def get_from_user(user: User) -> List[Account]:
-        join_smt = "SELECT account_id FROM piggybank.user_accounts WHERE user_id=%s"
+        smt = """
+            select
+                a.id, account_type, balance
+            from
+                piggybank.user u
+                inner join piggybank.user_account ua on u.id = ua.user_id
+                left join piggybank.account a on ua.account_id = a.id
+            where
+                u.id = %s
+        """
         cursor = conn.cursor()
-        cursor.execute(join_smt, [user.id])
+        cursor.execute(smt, [user.id])
         records = cursor.fetchall()
 
-        account_ids = [account_id for account_id in records]
-        accounts = []
-        acc_smt = "SELECT * FROM piggybank.accounts WHERE id = %s"
-
-        for account_id in account_ids:
-            cursor.execute(acc_smt, [account_id])
-            record = cursor.fetchone()
-            account = Account(record[0], record[1], record[2])
-            accounts.append(account)
-
+        accounts = [Account(*record) for record in records]
         return accounts
 
+    @staticmethod
     def get_all() -> List[Account]:
-        smt = "SELECT * FROM piggybank.accounts"
+        smt = "select * from piggybank.account"
         cursor = conn.cursor()
         cursor.execute(smt)
         records = cursor.fetchall()
 
-        accounts = []
-        for account in records:
-            account = Account(account[0], account[1], account[2])
-            accounts.append(account)
-
+        accounts = [Account(*record) for record in records]
         return accounts
 
+    @staticmethod
     def update(account: Account) -> Account:
-        smt = "UPDATE piggybank.accounts SET account_type=%s, balance=%s WHERE id=%s"
+        smt = """
+            update
+                piggybank.account
+            set
+                account_type = %s, balance = %s
+            where
+                id = %s
+        """
         cursor = conn.cursor()
         cursor.execute(smt, [account.type, account.balance, account.id])
+        conn.commit()
 
         return account
 
+    @staticmethod
     def delete(account: Account) -> bool:
-        smt = "DELETE FROM piggybank.accounts WHERE id=%s"
+        smt = "delete from piggybank.account where id = %s"
         cursor = conn.cursor()
         cursor.execute(smt, [account.id])
+        conn.commit()
 
         return True
