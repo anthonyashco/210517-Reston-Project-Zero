@@ -1,7 +1,14 @@
 # Rename this file to settings.yml
 
 postgres:
-  database: postgres
-  user: postgres
-  password: password
-  host: localhost
+  type: local
+  local:
+    database: postgres
+    user: postgres
+    password: password
+    host: localhost
+  remote:
+    database: postgres
+    user: postgres
+    password: password
+    host: remotehost
