@@ -118,7 +118,7 @@ class UserAccountDAO():
 
     @staticmethod
     def delete(ua: UserAccount) -> bool:
-        smt = "delete from piggybank.transactions where id = %s"
+        smt = "delete from piggybank.user_account where id = %s"
         cursor = conn.cursor()
         cursor.execute(smt, [ua.id])
         conn.commit()
