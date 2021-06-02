@@ -113,6 +113,13 @@ def create_routes(app: Flask):
             account.to_json() for account in s.get_accounts_from_user(user)
         ]), 200
 
+    @app.route("/user/<user_id>/transaction", methods=["GET"])
+    def get_transactions_from_user(user_id: str):
+        user = s.get_user(int(user_id))
+        results = s.get_transactions_from_user(user)
+        json = [tran.to_json() for tran in results]
+        return jsonify(json), 200
+
     @app.route("/account", methods=["GET"])
     def get_accounts():
         account_id = request.args.get("id")

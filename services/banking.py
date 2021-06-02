@@ -143,3 +143,6 @@ class BankingService(BankingInterface):
         self.a.update(account)
         self.a.update(recipient)
         return tran
+
+    def get_transactions_from_user(self, user: User) -> List[Transaction]:
+        return self.t.get_from_user(user)
