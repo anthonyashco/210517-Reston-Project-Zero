@@ -11,4 +11,6 @@ insert into piggybank.account values (default, 'credit', 10.00);
 insert into piggybank.user_account values (default, 3, 1);
 insert into piggybank.user_account values (default, 4, 2);
 
+insert into piggybank.transaction values (default, 1, 3, 2, 1.00, default)
+
 commit;
