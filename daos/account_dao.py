@@ -1,3 +1,4 @@
+from exceptions.resource_not_found import ResourceNotFound
 from entities.account import Account
 from entities.user import User
 from typing import List
@@ -26,6 +27,8 @@ class AccountDAO():
         records = cursor.fetchall()
 
         accounts = [Account(*record) for record in records]
+        if len(accounts) == 0:
+            raise ResourceNotFound(f"account with id {account_id} not found.")
         return accounts[0]
 
     @staticmethod

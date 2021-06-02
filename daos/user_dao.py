@@ -1,5 +1,6 @@
 from entities.account import Account
 from entities.user import User
+from exceptions.resource_not_found import ResourceNotFound
 from typing import List
 from utils.connect import Connection
 
@@ -36,6 +37,8 @@ class UserDAO():
         records = cursor.fetchall()
 
         users = [User(*record) for record in records]
+        if len(users) == 0:
+            raise ResourceNotFound(f"User with id {user_id} not found.")
         return users[0]
 
     @staticmethod
@@ -46,6 +49,8 @@ class UserDAO():
         records = cursor.fetchall()
 
         users = [User(*record) for record in records]
+        if len(users) == 0:
+            raise ResourceNotFound(f"User with email {email} not found.")
         return users[0]
 
     @staticmethod
@@ -93,8 +98,10 @@ class UserDAO():
             user.email, user.pass_hash, user.pass_salt, user.first_name,
             user.last_name, user.status, user.id
         ])
+        if cursor.rowcount == 0:
+            conn.rollback()
+            raise ResourceNotFound(f"User with id of {user.id} not found.")
         conn.commit()
-
         return user
 
     @staticmethod
@@ -104,4 +111,4 @@ class UserDAO():
         cursor.execute(smt, [user.id])
         conn.commit()
 
-        return True
+        return True if cursor.rowcount > 0 else False
