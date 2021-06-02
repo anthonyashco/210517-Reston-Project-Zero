@@ -9,7 +9,7 @@ class Account():
                  balance: float = None) -> None:
         self.id = account_id
         self.type = account_type
-        self.balance = balance
+        self.balance = float(balance)
 
     def __str__(self) -> str:
         return f"Account {self.id} ({self.type}): {self.balance:.2f}"
@@ -18,7 +18,7 @@ class Account():
         return {
             "id": self.id,
             "account_type": self.type,
-            "balance": self.balance
+            "balance": f"{self.balance:.2f}"
         }
 
     @staticmethod
