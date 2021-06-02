@@ -14,8 +14,8 @@ class Transaction():
         self.id = transaction_id
         self.source_account_id = source_account_id
         self.source_user_id = source_user_id
-        self.destination_account_id = destination_account_id
-        self.transfer_amount = transfer_amount
+        self.destination_account_id = int(destination_account_id)
+        self.transfer_amount = float(transfer_amount)
         self.transaction_time = transaction_time
 
     def __str__(self) -> str:
@@ -26,12 +26,18 @@ class Transaction():
 
     def to_json(self) -> dict:
         return {
-            "id": self.id,
-            "source_account_id": self.source_account_id,
-            "source_user_id": self.source_user_id,
-            "transfer_amount": self.transfer_amount,
-            "destination_account_id": self.destination_account_id,
-            "transaction_time": self.transaction_time
+            "id":
+                self.id,
+            "source_account_id":
+                self.source_account_id,
+            "source_user_id":
+                self.source_user_id,
+            "transfer_amount":
+                f"{self.transfer_amount:.2f}",
+            "destination_account_id":
+                self.destination_account_id,
+            "transaction_time":
+                self.transaction_time.strftime("%Y.%m.%d, %H:%M:%S")
         }
 
     @staticmethod
