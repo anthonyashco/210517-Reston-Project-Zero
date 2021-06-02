@@ -18,6 +18,18 @@ def create_routes(app: Flask):
     def hello():
         return "Hello world!", 200
 
+    @app.route("/login", methods=["PATCH"])
+    def login():
+        body = request.json
+        try:
+            success = s.login(body["email"], body["password"])
+        except ResourceNotFound:
+            return "User account was not found.", 404
+        if success:
+            return "Login was successful.", 200
+        else:
+            return "Login was not successful.", 200
+
     @app.route("/user", methods=["POST"])
     def create_user():
         """

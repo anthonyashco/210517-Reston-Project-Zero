@@ -21,6 +21,10 @@ class BankingService(BankingInterface):
         self.ua = user_account_dao
         self.u = user_dao
 
+    def login(self, email: str, password: str):
+        user = self.u.get_from_email(email)
+        return Password.check_pass(password, user.pass_hash, user.pass_salt)
+
     def create_user_inline(self, email: str, password: str, first_name: str,
                            last_name: str, status: str) -> User:
         pass_hash, pass_salt = Password.hash_griddle(password)
